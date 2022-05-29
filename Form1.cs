@@ -56,7 +56,8 @@ namespace SuperMarket
             }
             else
             {
-           
+                Form cuPanal = new CuPanal(user["FirstName"].ToString(), user["LastName"].ToString(), userName);
+                cuPanal.Show();
             }
 
         }

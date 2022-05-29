@@ -59,7 +59,9 @@ namespace SuperMarket
                     MessageBox.Show("Some error occured in Database!");
                     return;
                 }
-
+                Form cuPanal = new CuPanal(fstName, lstName, userName);
+                this.Hide();
+                cuPanal.Show();
             }
         }
     }

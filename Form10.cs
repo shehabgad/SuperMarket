@@ -7,42 +7,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Globalization;
+
 namespace SuperMarket
 {
-    public partial class AdminProfile : Form
+    public partial class CuProfile : Form
     {
         Model model = new Model();
         string userName;
-        public AdminProfile(string userName)
+        public CuProfile(string userName)
         {
             InitializeComponent();
             this.userName = userName;
+        }
+
+        private void CuProfile_Load(object sender, EventArgs e)
+        {
             loadData();
         }
-        public void loadData()
+        void loadData()
         {
-            DataRow admin = model.getUser(userName);
-            inFirstName.Text = admin["FirstName"].ToString();
-            inLastName.Text = admin["LastName"].ToString();
-            inPassword.Text = admin["Password"].ToString();
-            inEmail.Text = admin["Email"].ToString();
-            int year = int.Parse(admin["Year"].ToString());
-            int day = int.Parse(admin["Day"].ToString());
-            int month = model.monthToDay[admin["Month"].ToString()];
+            DataRow customer = model.getUser(userName);
+            lbUserName.Text = userName;
+            inFirstName.Text = customer["FirstName"].ToString();
+            inLastName.Text = customer["LastName"].ToString();
+            inPassword.Text = customer["Password"].ToString();
+            inEmail.Text = customer["Email"].ToString();
+            int year = int.Parse(customer["Year"].ToString());
+            int day = int.Parse(customer["Day"].ToString());
+            int month = model.monthToDay[customer["Month"].ToString()];
             inBirthDate.Value = new DateTime(year, month, day);
         }
-        private void AdminProfile_Load(object sender, EventArgs e)
-        {
 
-        }
-
-        private void inEmplyNumber_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void btnUpdate_Click(object sender, EventArgs e)
         {
             string fstName = inFirstName.Text.ToString().Trim();
             string lstName = inLastName.Text.ToString().Trim();
@@ -57,7 +53,7 @@ namespace SuperMarket
                 MessageBox.Show("Please fill the whole form");
                 return;
             }
-            if(model.updateUser(userName, fstName, lstName, email, password, birthYear, birthMonth, birthDay))
+            if (model.updateUser(userName, fstName, lstName, email, password, birthYear, birthMonth, birthDay))
             {
                 MessageBox.Show("Data is updated successfully!");
             }
@@ -66,11 +62,6 @@ namespace SuperMarket
                 MessageBox.Show("Error in database!");
             }
             loadData();
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

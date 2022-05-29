@@ -52,7 +52,7 @@ namespace SuperMarket
             if (dt.Rows.Count == 0) return null;
             return dt.Rows[0];
         }
-        public bool updateAdmin(string userName, string firstName, string lastName, string email, string password, int year, int monthi, int day)
+        public bool updateUser(string userName, string firstName, string lastName, string email, string password, int year, int monthi, int day)
         {
             try
             {
@@ -169,6 +169,61 @@ namespace SuperMarket
             }
             return true;
         }
+        public int getPromoCode(string promoCode)
+        {
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter($"SELECT DiscountPer FROM PromoCode WHERE PromoCode = '{promoCode}'", conn);
+            sdp.Fill(dt);
+            conn.Close();
+            if (dt.Rows.Count == 0) return -1;
+            return int.Parse(dt.Rows[0]["DiscountPer"].ToString());
+        }
+        public void deletePromoCode(string promoCode)
+        {
+            conn.Open();
+            SqlCommand cmnd = new SqlCommand($"DELETE FROM PromoCode WHERE PromoCode = '{promoCode}'", conn);
+            cmnd.ExecuteNonQuery();
+            conn.Close();
+        }
+        public bool addOrder(string userName, DataTable products, float totalPrice)
+        {
+            conn.Open();
+            Random random = new Random();
+            int year = random.Next(2000,2023);
+            string monthStr = month[random.Next(1,13)];
+            int day = random.Next(1,31);
+            SqlCommand cmnd = new SqlCommand($"INSERT INTO [Order] (Price, Year, Month, Day, Cu_UserName)" +
+                $"OUTPUT INSERTED.OrderID " +
+                $"VALUES({totalPrice}" +
+                $", {year}, '{monthStr}', '{day}', '{userName}')", conn);
+            int orderID = (int)cmnd.ExecuteScalar();
+            conn.Close();
+            incOrders(userName);
+            addProductOrders(orderID, products);
+
+            return true;
+        }
+        void incOrders(string userName)
+        {
+            conn.Open();
+            SqlCommand cmnd = new SqlCommand($"UPDATE [Customer] SET NOrders = NOrders + 1 WHERE Cu_UserName = '{userName}'", conn);
+            cmnd.ExecuteNonQuery();
+            conn.Close();
+        }
+        void addProductOrders(int orderID, DataTable products)
+        {
+            conn.Open();
+            foreach (DataRow row in products.Rows)
+            {
+                int quantity = int.Parse(row["Quantity"].ToString());
+                int productId = int.Parse(row["ID"].ToString());
+                SqlCommand cmnd = new SqlCommand($"INSERT INTO [OrderProducts] VALUES({quantity},{productId},{orderID})",conn);
+                cmnd.ExecuteNonQuery();
+
+            }
+            conn.Close();
+        }
         public string randomPromoCode()
         {
             Random rand = new Random();
@@ -209,6 +264,24 @@ namespace SuperMarket
                 sdp.Fill(dt);
             }
          
+            conn.Close();
+            return dt;
+        }
+        public DataTable getPromoCodes(string userName)
+        {
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter($"SELECT PromoCode, DiscountPer FROM PromoCode WHERE Cu_UserName = '{userName}'", conn);
+            sdp.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+        public DataTable getProducts(string name, string category)
+        {
+            conn.Open();
+            DataTable dt = new DataTable();          
+            SqlDataAdapter sdp = new SqlDataAdapter($"SELECT ProductID,Name,Price,Category,Description FROM Product WHERE Name Like '%{name}%' AND Category Like '%{category}%' AND Quantity > 0", conn);
+            sdp.Fill(dt);
             conn.Close();
             return dt;
         }
