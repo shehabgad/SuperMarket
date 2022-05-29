@@ -38,7 +38,7 @@ namespace SuperMarket
             card.Columns.Add("Quantity");
             display();
         }
-        void display()
+        public void display()
         {
             dtProducts.DataSource = model.getProducts(searchName, searchCategory);
         }

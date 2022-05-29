@@ -232,5 +232,41 @@ namespace SuperMarket
             Form adminProfile = new AdminProfile(userName);
             adminProfile.Show();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Form form = new Form11();
+            form.Show();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            Form form = new Form12();
+            form.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Form form = new Form13();
+            form.Show();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Form form = new Form14();
+            form.Show();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Form form = new Form15();
+            form.Show();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Form form = new Form16();
+            form.Show();
+        }
     }
 }

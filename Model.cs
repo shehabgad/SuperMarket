@@ -52,6 +52,100 @@ namespace SuperMarket
             if (dt.Rows.Count == 0) return null;
             return dt.Rows[0];
         }
+        public DataTable mostBoughtPr()
+        {
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter("" +
+                "SELECT A.ProductID, count(A.ProductID) as customers FROM " +
+                "(SELECT DISTINCT A.ProductID, B.Cu_UserName " +
+                "FROM OrderProducts as A, " +
+                "[Order] as B " +
+                "WHERE A.OrderID = B.OrderID) as A " +
+                "GROUP BY A.ProductID ORDER BY customers DESC;", conn);
+            sdp.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+        public DataTable noCustomersPr(string month)
+        {
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter("" +
+                "SELECT ProductID FROM Product " +
+                "EXCEPT " +
+                "(SELECT B.ProductID  FROM " +
+                " [Order] as A," +
+                " [OrderProducts] as B " +
+                " WHERE A.OrderID = B.OrderID " +
+                $"AND A.[Month] = '{month}');", conn);
+            sdp.Fill(dt);
+            conn.Close();
+            return dt;
+
+        }
+        public DataTable noCustomerYear()
+        {
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter("" +
+                "SELECT Cu_UserName FROM Customer " +
+                "EXCEPT " +
+                "SELECT A.Cu_UserName FROM " +
+                "[Order] as A WHERE A.Year = YEAR(GETDATE()) - 1 ", conn);
+            sdp.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+        public DataTable highestPurchaseCustomer(string monthStr)
+        {
+
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter("" +
+                "SELECT DISTINCT Cu_UserName FROM [Order] WHERE PRICE = ( " +
+                $"SELECT MAX(Price) as price FROM [Order] WHERE Month = '{monthStr}'); "
+                , conn);
+            sdp.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+        public DataTable categoryCompare(string catg1, string catg2)
+        {
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter("" +
+                "SELECT  D.Category, sum(C.customers) as customers FROM " +
+                "(SELECT A.ProductID, count(A.ProductID) as customers FROM  " +
+                "(SELECT DISTINCT A.ProductID, B.Cu_UserName " +
+                "FROM OrderProducts as A, " +
+                "[Order] as B " +
+                "WHERE A.OrderID = B.OrderID) as A " +
+                "GROUP BY A.ProductID ) as C, Product as D " +
+                "WHERE D.ProductID = C.ProductID " +
+                $"GROUP BY D.Category HAVING D.Category = '{catg1}' OR D.Category = '{catg2}' ORDER BY customers DESC; ", conn);
+            sdp.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+        public DataTable getProductsINFO()
+        {
+            conn.Open();
+            DataTable dt = new DataTable();
+            SqlDataAdapter sdp = new SqlDataAdapter("" +
+                "SELECT A.*, (CASE WHEN B.customers IS NULL THEN 0 ELSE B.customers END) as customers " +
+                "FROM Product as A LEFT JOIN " +
+                "(SELECT A.ProductID, count(A.ProductID) as customers FROM " +
+                "(SELECT DISTINCT A.ProductID, B.Cu_UserName " +
+                "FROM OrderProducts as A, " +
+                "[Order] as B " +
+                "WHERE A.OrderID = B.OrderID) as A " +
+                "GROUP BY A.ProductID) as B ON A.ProductID = B.ProductID " +
+                "", conn);
+            sdp.Fill(dt);
+            conn.Close();
+            return dt;
+        }
         public bool updateUser(string userName, string firstName, string lastName, string email, string password, int year, int monthi, int day)
         {
             try
@@ -153,9 +247,7 @@ namespace SuperMarket
             try
             {
 
-                SqlCommand cmnd = new SqlCommand($"DELETE FROM PromoCode WHERE Cu_UserName = '{userName}'", conn);
-                cmnd.ExecuteNonQuery();
-                cmnd = new SqlCommand($"DELETE FROM [User] WHERE UserName = '{userName}'", conn);
+                SqlCommand cmnd = new SqlCommand($"DELETE FROM [User] WHERE UserName = '{userName}'", conn);
                 cmnd.ExecuteNonQuery();
                 cmnd = new SqlCommand($"DELETE FROM Customer WHERE Cu_UserName = '{userName}'", conn);
                 cmnd.ExecuteNonQuery();
@@ -219,6 +311,8 @@ namespace SuperMarket
                 int quantity = int.Parse(row["Quantity"].ToString());
                 int productId = int.Parse(row["ID"].ToString());
                 SqlCommand cmnd = new SqlCommand($"INSERT INTO [OrderProducts] VALUES({quantity},{productId},{orderID})",conn);
+                cmnd.ExecuteNonQuery();
+                cmnd = new SqlCommand($"UPDATE [Product] SET Quantity = Quantity - {quantity} WHERE ProductID = {productId}",conn);
                 cmnd.ExecuteNonQuery();
 
             }

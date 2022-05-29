@@ -32,3 +32,9 @@ C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\Supe
 C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.PromoCodes.resources
 C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.Card.resources
 C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.CuProfile.resources
+C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.Form11.resources
+C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.Form12.resources
+C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.Form13.resources
+C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.Form14.resources
+C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.Form15.resources
+C:\Users\dell\source\repos\SuperMarket\SuperMarket\obj\Debug\net6.0-windows\SuperMarket.Form16.resources
